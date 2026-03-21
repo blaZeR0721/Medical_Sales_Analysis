@@ -98,14 +98,15 @@ def daily_quantity_series(df_med: pd.DataFrame) -> pd.DataFrame:
     seasonal naive model handles sparse weekdays via the global mean fallback,
     so explicit gap-filling is not required.
     """
-    return (
+    df_daily = (
         df_med.groupby(df_med["DateTime"].dt.date)["Quantity"]
         .sum()
         .to_frame()
         .rename_axis("Date")
-        .pipe(lambda df: df.set_index(pd.to_datetime(df.index)))
-        .sort_index()
     )
+
+    df_daily = df_daily.set_index(pd.to_datetime(df_daily.index)).sort_index()
+    return df_daily
 
 
 # ---------------------------------------------------------------------------
@@ -311,4 +312,3 @@ def cross_validate(ts: pd.DataFrame) -> dict[str, float]:
         "mae": float(np.mean(valid_errors)),
         "mape": float(np.mean(pct_errors)) if pct_errors else np.nan,
     }
-
