@@ -30,13 +30,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from forecasting import (
-    SeasonalNaiveModel,
-    cross_validate,
-    daily_quantity_series,
-    fit_seasonal_naive,
-    forecast,
-)
+from forecasting import (SeasonalNaiveModel, cross_validate,
+                         daily_quantity_series, fit_seasonal_naive, forecast)
 
 # ---------------------------------------------------------------------------
 # Page configuration
@@ -52,8 +47,13 @@ _DATA_PATH = "D:\\7th sem\\project\\Medical_Sales_Analysis\\data\\pharmacy_sales
 _DATE_FORMAT = "%d-%m-%Y %H:%M"
 _HORIZON_OPTIONS: list[int] = [7, 14]
 _WEEKDAY_ORDER: list[str] = [
-    "Monday", "Tuesday", "Wednesday", "Thursday",
-    "Friday", "Saturday", "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
 ]
 _HISTORY_COLOR = "#4C72B0"
 _FORECAST_COLOR = "#DD8452"
@@ -131,9 +131,7 @@ def main() -> None:
     st.sidebar.header("Controls")
 
     medicine_list: list[str] = sorted(df["DrugName"].unique())
-    selected_med: str = st.sidebar.selectbox(
-        "Select Medicine", medicine_list, index=0
-    )
+    selected_med: str = st.sidebar.selectbox("Select Medicine", medicine_list, index=0)
     horizon_days: int = st.sidebar.select_slider(
         "Prediction window (days)", options=_HORIZON_OPTIONS, value=7
     )
@@ -235,15 +233,20 @@ def _render_forecast_tab(
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         margin=dict(t=40),
     )
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, width="stretch")
 
     st.markdown("### Forecast Table (Units)")
     display_df = (
         forecast_df.copy()
-        .assign(PredictedQty=lambda df: df["PredictedQty"].round().astype(int).apply(lambda x: f"{x:,}"))
+        .assign(
+            PredictedQty=lambda df: df["PredictedQty"]
+            .round()
+            .astype(int)
+            .apply(lambda x: f"{x:,}")
+        )
         .set_index("Date")
     )
-    st.dataframe(display_df, width='stretch')
+    st.dataframe(display_df, width="stretch")
 
     st.download_button(
         label="Download Forecast Data",
@@ -304,7 +307,7 @@ def _render_history_tab(ts_med: pd.DataFrame, selected_med: str) -> None:
         hovermode="x unified",
         margin=dict(t=20),
     )
-    st.plotly_chart(fig_hist, width='stretch')
+    st.plotly_chart(fig_hist, width="stretch")
 
     st.subheader("Average Units Sold by Weekday")
     weekday_avg = (
@@ -328,7 +331,7 @@ def _render_history_tab(ts_med: pd.DataFrame, selected_med: str) -> None:
         coloraxis_showscale=False,
         margin=dict(t=20),
     )
-    st.plotly_chart(fig_bar, width='stretch')
+    st.plotly_chart(fig_bar, width="stretch")
 
 
 # ---------------------------------------------------------------------------
@@ -337,5 +340,3 @@ def _render_history_tab(ts_med: pd.DataFrame, selected_med: str) -> None:
 
 if __name__ == "__main__":
     main()
-
-    
